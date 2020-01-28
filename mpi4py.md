@@ -47,6 +47,28 @@ Ainsi, l'exemple donné ci-dessus peut aussi s'écrire à la C comme suit :
 
     print(f"Hello from {numero_processus}/{nombre_processus}")
 
+### Manipulation des communicateurs
+
+Pour avoir une copie effective du communicateur ( et non un référence sur le communicateur en utilisant le
+signe d'égalité ), on peut utiliser la méthode `Dup`:
+
+    from mpi4py import MPI
+
+    comm_ref = MPI.COMM_WORLD # On n'a pas copié le communicateur global, on fait une simple référence dessus
+    comm_cpy = comm_ref.Dup() # Là, on a fait une vraie copie du communicateur dans un nouveau communicateur. 
+
+Il est possible de définir des sous-communicateurs en utilisant la méthode `Split` de la même manière qu'en C :
+
+    from mpi4py import MPI
+
+    comm = MPI.COMM_WORLD # référence au communicateur global
+    numero_processus = comm.Get_rank()
+
+    # On fait une partition processus de rang pair/ processus de rang impair
+    couleur = numero_processus % 2
+
+    nouveau_comm = comm.Split(couleur, numero_processus)
+
 ## Communication point à point
 
 Les fonctions de base permettant de transférer des données entre les différents processus, sous python,
@@ -120,7 +142,22 @@ numpy soit en laissant mpi4py "deviner" quels types de données sont stockées d
 des fonctions de numpy donnant le type de données stockées !).
 
 
-## Collective Communication
+## Communication collective
+
+Pour faire une barrière de synchronisation :
+
+    from mpi4py import MPI
+    import time
+
+    comm = MPI.COMM_WORLD
+
+    # On fait une barrière de synchronisation pour mesurer le temps pris par les processus pour une
+    # section parallèle.
+    comm.Barrier()
+    t1 = time.time()
+    ... # Section parallèle dont on veut mesurer le temps
+    t2 = time.time()
+    print(f"Temps passé en parallèle dans la section mesurée : {t2-t1} secondes")
 
 Exemple de diffusion d'un dictionnaire python :
 
