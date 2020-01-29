@@ -12,14 +12,19 @@ par exemple, un script python sur quatre processus, il faut lancer la commande :
 Les communicateurs sous python offrent les mêmes souplesses que ceux en C ou en Fortran.  Ils permettent une partition des processus, la définition de groupe, etc.
 
 Par défaut, MPI propose un communicateur `MPI.COMM_WORLD`
-englobant tous les processus lancés par la commande `mpiexec`.
+englobant tous les processus lancés par la commande `mpiexec`. On construit généralement d'autres communicateurs
+à partir de ce communicateur "global".
+
+Remarque : Ecrire en Python la ligne suivante :
+---------
+    comm = MPI.COMM_WORLD
+**ne copie pas** le communicateur global mais effectue une simple référence sur ce communicateur.
 
 ### Interrogation d'un communicateur à l'aide d'attributs dérivés
 
 En python, afin de simplifier l'interface, l'interrogation d'un communicateur pour connaître le rang
 ou le nombre de processus contenus dans le communicateur, peut se faire à l'aide d'un attribut dérivé,
-c'est à dire à une valeur accessible du point de vue utilisateur à l'aide d'une variable stockée dans le
-communicateur mais qui en réalité va appelé une fonction C donnant le rang ou le nombre de processus.
+c'est à dire une valeur vue comme attribut du communicateur *du point de vue utilisateur*  mais qui en réalité va appeler une fonction C donnant le rang ou le nombre de processus.
 
 Exemple de code :
 ----------------
@@ -37,7 +42,7 @@ Il est néanmoins possible d'appeler une fonction équivalente à la fonction C 
 Cette fonction est en générale plus simple d'emploi que son homologue en C et appelle directement la
 fonction C correspondante :
 
-Ainsi, l'exemple donné ci-dessus peut aussi s'écrire à la C comme suit :
+Ainsi, l'exemple donné ci-dessus peut aussi s'écrire "à la C" comme suit :
     
     from mpi4py import MPI
 
@@ -68,12 +73,15 @@ Il est possible de définir des sous-communicateurs en utilisant la méthode `Sp
     couleur = numero_processus % 2
 
     nouveau_comm = comm.Split(couleur, numero_processus)
+    rank_oddeven = nouveau_comm.Get_rank()
+    size_oddeven = nouveau_comm.Get_size()
 
 ## Communication point à point
 
 Les fonctions de base permettant de transférer des données entre les différents processus, sous python,
 sérialisent les objets à l'aide du module `pickle`. Cela permet une grande souplesse pour l'envoie des
-données mais en contrepartie, il y aura un surcout supplémentaire dû à cette sérialisation.
+données (on peut envoyer et recevoir n'importe quel objet sérialisable au sens Python) 
+mais en contrepartie, il y aura un surcout supplémentaire dû à cette sérialisation.
 
 ### Envoie de données sérialisées
 
