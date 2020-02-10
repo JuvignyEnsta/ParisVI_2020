@@ -47,8 +47,8 @@ Ainsi, l'exemple donné ci-dessus peut aussi s'écrire "à la C" comme suit :
     from mpi4py import MPI
 
     comm = MPI.COMM_WORLD # référence au communicateur global
-    numero_processus = comm.Get_rank()
-    nombre_processus = comm.Get_size()
+    numero_processus = comm.Get_rank() # Equivalent à comm.rank
+    nombre_processus = comm.Get_size() # Equivalent à comm.size
 
     print(f"Hello from {numero_processus}/{nombre_processus}")
 
