@@ -22,7 +22,7 @@ static PyObject* py_compvert2elts( PyObject* self, PyObject* args )
 			 &PyArray_Type, &py_glob2loc))
     return NULL;
   if ( py_glob2loc != NULL ) glob2loc = (const long*)PyArray_DATA(py_glob2loc);
-  long nbElts =  long(PyArray_DIM(py_elt2verts,0))-1;
+  long nbElts =  long(PyArray_DIM(py_elt2verts,0));
   // Calcul du nombre de noeuds pris en compte par elt2verts :
   std::list<long> indVerts;
   for ( long i = 0; i < nbElts; ++i ) {
@@ -30,7 +30,7 @@ static PyObject* py_compvert2elts( PyObject* self, PyObject* args )
     long v1 = elt2verts[0];
     long v2 = elt2verts[1];
     long v3 = elt2verts[2];
-    //std::cerr << "v1,v2, v3 : " << v1 << ", " << v2 << ", " << v3 << std::endl;
+    //std::cerr << "v1,v2, v3 : " << v1 << ", " << v2 << ", " << v3 << std::flush << std::endl;
     assert(v1>=0); assert(v2 >= 0); assert(v3 >= 0);
     if ( glob2loc != NULL ) {
       if (glob2loc[v1] >= 0) indVerts.push_back(v1);
@@ -45,7 +45,6 @@ static PyObject* py_compvert2elts( PyObject* self, PyObject* args )
   indVerts.sort();
   indVerts.unique();
   nbVerts = indVerts.size();
-  
   npy_intp nd[2];
   nd[0] = npy_intp(nbVerts+1);
   py_begVert2elts = (PyArrayObject*)PyArray_SimpleNew(1,nd,PyArray_LONG);
